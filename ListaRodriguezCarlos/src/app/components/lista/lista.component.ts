@@ -78,7 +78,7 @@ export class ListaComponent implements OnInit {
         if (a.nombre.toLowerCase()>b.nombre.toLowerCase()){
           return 1;
         }
-          return -1;
+        return -1;
         
     });
   }
