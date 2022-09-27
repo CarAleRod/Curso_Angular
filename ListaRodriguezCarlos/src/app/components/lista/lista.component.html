@@ -1,0 +1,29 @@
+<div class="container mt-5">
+    <nav class="navbar navbar-expand-lg text-bg-dark">
+        <div class="container-fluid">
+          <div class="col-6">
+              <a class="navbar-brand text-white ms-3" href="#">Lista de Alumnos</a>
+            </div>
+        </div>
+    </nav>
+<div *ngFor="let alumno of listaAlumnos">
+<div [ngClass]="alumno.activo===true? 'card mt-3 ml-3 bg-primary': 'card mt-3 ml-3 bg-danger'" >
+    <p class="card-text text-white">Apellido: {{ alumno.apellido | titlecase }} </p>
+    <p class="card-text text-white">Nombre: {{ alumno.nombre | titlecase}} </p>
+    <p class="card-text text-white">Edad: {{ alumno.edad  }} </p>
+    <div [ngSwitch]="alumno.genero">
+        <p *ngSwitchCase="'F'" class="text-white">Genero: Femenino</p>
+        <p *ngSwitchCase="'M'" class="text-white">Genero: Masculino</p>
+    </div>
+    <p class="card-text text-white">Subscripciones:</p>
+    <ol >
+        <div *ngFor="let subscripcion of alumno.subscripciones.sort()">
+        <li class="text-white">{{ subscripcion }}</li>
+        </div>        
+    </ol>
+    <p *ngIf="alumno.activo" class="card-text text-white">Estado: Activo </p>
+    <p *ngIf="!alumno.activo" class="card-text text-white">Estado: Inactivo </p>
+    <p class="card-text text-white">Fecha de Ingreso: {{ alumno.fechaIngreso | date: "dd/MM/yyyy"}}</p>
+</div>
+</div>
+</div>
