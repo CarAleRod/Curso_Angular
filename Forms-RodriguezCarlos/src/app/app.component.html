@@ -1,0 +1,26 @@
+<div class="container mt-5">
+  <nav class="navbar navbar-expand-lg text-bg-dark">
+      <div class="container-fluid">
+        <div class="col-6">
+            <a class="navbar-brand text-white ms-3" href="#">Ingreso de Alumnos</a>
+          </div>
+      </div>
+  </nav>
+  <div class="row">
+      <div class="col">
+        <app-formulario (agregarAlumno)="agregarAlumnoInRoot($event)"></app-formulario>
+      </div>
+  </div>
+  <nav class="navbar navbar-expand-lg text-bg-dark mt-3">
+      <div class="container-fluid">
+        <div class="col-6">
+            <a class="navbar-brand text-white ms-3" href="#">Lista de Alumnos</a>
+          </div>
+      </div>
+  </nav>
+  <div class="row">
+      <div class="col">
+          <app-lista  [Alumnos]="alumnos"></app-lista>
+      </div>
+  </div>
+</div>

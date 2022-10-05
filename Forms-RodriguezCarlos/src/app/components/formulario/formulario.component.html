@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="col">
+        <form [formGroup]="formulario" (ngSubmit)="enviarForm()">
+            <div class="row">
+                    <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre">
+            </div>
+            <div class="row text-danger">
+                    <small *ngIf="formulario.get('nombre')?.touched && formulario.get('nombre')?.errors?.['required']">El campo es requerido</small>
+            </div>
+            <div class="row">
+                    <input type="text" class="form-control" formControlName="apellido" placeholder="Apellido">
+            </div>
+            <div class="row text-danger">
+                    <small *ngIf="formulario.get('apellido')?.touched && formulario.get('apellido')?.errors?.['required']">El campo es requerido</small>
+            </div>
+            <div class="row">
+                    <input type="text" class="form-control" formControlName="edad" placeholder="Edad">
+            </div>
+            <div class="row text-danger">
+                    <small *ngIf="formulario.get('edad')?.touched && formulario.get('edad')?.errors?.['pattern']">El campo debe ser numérico</small>
+            </div>
+            <div class="row text-danger">
+                    <small *ngIf="formulario.get('edad')?.touched && formulario.get('edad')?.errors?.['required']">El campo es requerido</small>
+            </div>
+            <div class="row">
+                    <input type="text" class="form-control" formControlName="email" placeholder="email">
+            </div>
+            <div class="row text-danger">
+                    <small *ngIf="formulario.get('email')?.touched && formulario.get('email')?.errors?.['email']">El campo debe tener un email valido</small>
+            </div>
+            <div class="row text-danger">
+                    <small *ngIf="formulario.get('email')?.touched && formulario.get('email')?.errors?.['requerido']">El campo es requerido</small>
+            </div>
+            <div class="row">
+                <button type="submit" class="btn btn-primary" [disabled]="formulario.invalid">Agregar alumno</button>
+            </div>
+        </form>
+    </div>
+</div>
