@@ -1,0 +1,53 @@
+<nav class="navbar text-bg-dark text-white mt-2">
+  <div class="container-fluid">
+    <div class="col-12">
+      <span appHeader20>Lista de cursos (con Subscription)</span>
+    </div>
+  </div>
+</nav>
+<div class="row">
+  <div class="col-md-12">
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8 listcursos">
+      <ng-container matColumnDef="nombre">
+        <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+        <mat-cell *matCellDef="let curso">
+          {{ curso.nombre | titlecase }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="comision">
+        <mat-header-cell *matHeaderCellDef>Comision</mat-header-cell>
+        <mat-cell *matCellDef="let curso"> {{ curso.comision }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="profesor">
+        <mat-header-cell *matHeaderCellDef>Profesor</mat-header-cell>
+        <mat-cell *matCellDef="let curso">
+          {{ curso.profesor | titlecase }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fechaInicio">
+        <mat-header-cell *matHeaderCellDef>Inicio</mat-header-cell>
+        <mat-cell *matCellDef="let curso">{{
+          curso.fechaInicio | date: "dd/MM/YYYY"
+        }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="fechaFin">
+        <mat-header-cell *matHeaderCellDef>Fin</mat-header-cell>
+        <mat-cell *matCellDef="let curso">{{
+          curso.fechaFin | date: "dd/MM/YYYY"
+        }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="inscripcionAbierta">
+        <mat-header-cell *matHeaderCellDef>Abierto</mat-header-cell>
+        <mat-cell *matCellDef="let curso">{{
+          curso.inscripcionAbierta
+        }}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnas"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnas"></mat-row>
+    </mat-table>
+  </div>
+</div>

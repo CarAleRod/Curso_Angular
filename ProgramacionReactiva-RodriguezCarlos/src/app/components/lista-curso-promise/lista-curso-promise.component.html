@@ -1,0 +1,38 @@
+<nav class="navbar text-bg-dark text-white mt-2">
+  <div class="container-fluid">
+    <div class="col-6">
+      <span appHeader20>Lista de cursos (con Promise)</span>
+    </div>
+  </div>
+</nav>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table mat-elevation-z8">
+      <thead>
+        <th scope="col">Nombre</th>
+        <th scope="col">Comision</th>
+        <th scope="col">Profesor</th>
+        <th scope="col">Inicio</th>
+        <th scope="col">Fin</th>
+        <th scope="col">Abierto</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let curso of cursos">
+          <td>
+            {{ curso.nombre | titlecase }}
+          </td>
+
+          <td>{{ curso.comision }}</td>
+
+          <td>
+            {{ curso.profesor | titlecase }}
+          </td>
+
+          <td>{{ curso.fechaInicio | date: "dd/MM/YYYY" }}</td>
+          <td>{{ curso.fechaFin | date: "dd/MM/YYYY" }}</td>
+          <td>{{ curso.inscripcionAbierta }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
