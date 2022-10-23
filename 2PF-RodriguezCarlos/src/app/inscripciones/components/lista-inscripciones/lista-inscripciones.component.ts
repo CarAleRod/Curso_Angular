@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlumnosService } from 'src/app/alumnos/services/alumnos.service';
 import { CursosService } from 'src/app/cursos/services/cursos.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { I_Inscripcion } from '../../models/inscripcion';
 import { I_InscripcionConNombre } from '../../models/InscripcionConNombre';
 import { InscripcionesService } from '../../services/inscripciones.service';
@@ -26,13 +27,15 @@ export class ListaInscripcionesComponent implements OnInit, OnDestroy {
   ];
   dataSource: MatTableDataSource<I_InscripcionConNombre> =
     new MatTableDataSource<I_InscripcionConNombre>();
+  formulario!: FormGroup;
 
   constructor(
     private inscripcionesService: InscripcionesService,
     private cursosService: CursosService,
     private alumnosService: AlumnosService,
     private dialog: MatDialog,
-    private router: Router
+    private formBuilder: FormBuilder,
+    private matSnackBar: MatSnackBar
   ) {}
 
   ngOnDestroy(): void {
@@ -40,6 +43,10 @@ export class ListaInscripcionesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.formulario = this.formBuilder.group({
+      filtroCurso: ['', []],
+      filtroAlumno: ['', []],
+    });
     this.subscripcion =
       this.inscripcionesService.inscripcionesObservables.subscribe({
         next: (inscripciones: I_Inscripcion[]) => {
@@ -85,6 +92,8 @@ export class ListaInscripcionesComponent implements OnInit, OnDestroy {
       if (res) {
         if (!this.inscripcionesService.existeInscripcion(res)) {
           this.inscripcionesService.modificarInscripcion(id, res);
+        } else {
+          this.openSnackBar('Ya existe esta subscripción', 'Cancelado', 3000);
         }
       }
     });
@@ -108,27 +117,78 @@ export class ListaInscripcionesComponent implements OnInit, OnDestroy {
             id: newId,
           };
           this.inscripcionesService.agregarInscripcion(newData);
+        } else {
+          this.openSnackBar('Ya existe esta subscripción', 'Cancelado', 3000);
         }
       }
     });
   }
 
-  filtrar(event: Event) {
-    const valorFiltro = (event.target as HTMLInputElement).value;
-    this.dataSource.filterPredicate = function (
-      inscripcion: I_InscripcionConNombre,
-      filtro: string
-    ) {
-      return (
-        inscripcion.cursoNombre
-          .toLocaleLowerCase()
-          .includes(filtro.toLocaleLowerCase()) ||
-        inscripcion.alumnoNombre
-          .toLocaleLowerCase()
-          .includes(filtro.toLocaleLowerCase())
-      );
-    };
-    this.dataSource.filter = valorFiltro.trim().toLowerCase();
+  filtrarCurso(event: Event) {
+    const filtroAlum = this.formulario.controls['filtroAlumno'].value
+      .trim()
+      .toLocaleLowerCase();
+    const valorFiltro = (event.target as HTMLInputElement).value
+      .trim()
+      .toLocaleLowerCase();
+    if (valorFiltro == '' && filtroAlum != '') {
+      this.dataSource.filterPredicate = function (
+        inscripcion: I_InscripcionConNombre,
+        filtro: string
+      ) {
+        return inscripcion.alumnoNombre.toLocaleLowerCase().includes(filtro);
+      };
+      this.dataSource.filter = filtroAlum;
+    } else {
+      this.dataSource.filterPredicate = function (
+        inscripcion: I_InscripcionConNombre,
+        filtro: string
+      ) {
+        return (
+          inscripcion.cursoNombre.toLocaleLowerCase().includes(filtro) &&
+          inscripcion.alumnoNombre.toLocaleLowerCase().includes(filtroAlum)
+        );
+      };
+      this.dataSource.filter = valorFiltro;
+    }
+  }
+
+  filtrarAlumno(event: Event) {
+    const filtroCurs = this.formulario.controls['filtroCurso'].value
+      .trim()
+      .toLocaleLowerCase();
+
+    const valorFiltro = (event.target as HTMLInputElement).value
+      .trim()
+      .toLocaleLowerCase();
+    if (valorFiltro == '' && filtroCurs != '') {
+      this.dataSource.filterPredicate = function (
+        inscripcion: I_InscripcionConNombre,
+        filtro: string
+      ) {
+        return inscripcion.cursoNombre.toLocaleLowerCase().includes(filtro);
+      };
+      this.dataSource.filter = filtroCurs;
+    } else {
+      this.dataSource.filterPredicate = function (
+        inscripcion: I_InscripcionConNombre,
+        filtro: string
+      ) {
+        return (
+          inscripcion.cursoNombre.toLocaleLowerCase().includes(filtroCurs) &&
+          inscripcion.alumnoNombre.toLocaleLowerCase().includes(filtro)
+        );
+      };
+      this.dataSource.filter = valorFiltro;
+    }
+  }
+
+  openSnackBar(message: string, action: string, duration: number) {
+    if (duration && duration > 0) {
+      this.matSnackBar.open(message, action, { duration: duration });
+    } else {
+      this.matSnackBar.open(message, action);
+    }
   }
 
   obtenerProximoId() {

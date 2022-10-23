@@ -45,6 +45,17 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy {
         console.error(error);
       },
     });
+    this.dataSource.filterPredicate = function (
+      alumno: I_Alumno,
+      filtro: string
+    ) {
+      return (
+        alumno.nombre
+          .toLocaleLowerCase()
+          .includes(filtro.toLocaleLowerCase()) ||
+        alumno.apellido.toLocaleLowerCase().includes(filtro.toLocaleLowerCase())
+      );
+    };
   }
 
   editar(id: number) {
@@ -103,17 +114,6 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy {
 
   filtrar(event: Event) {
     const valorFiltro = (event.target as HTMLInputElement).value;
-    this.dataSource.filterPredicate = function (
-      alumno: I_Alumno,
-      filtro: string
-    ) {
-      return (
-        alumno.nombre
-          .toLocaleLowerCase()
-          .includes(filtro.toLocaleLowerCase()) ||
-        alumno.apellido.toLocaleLowerCase().includes(filtro.toLocaleLowerCase())
-      );
-    };
     this.dataSource.filter = valorFiltro.trim().toLowerCase();
   }
 

@@ -6,11 +6,29 @@
   </div>
 </nav>
 <div class="row">
-  <mat-form-field class="col-md-5">
-    <mat-label>Filtrar inscripcion</mat-label>
-    <input type="text" matInput (keyup)="filtrar($event)" />
-  </mat-form-field>
-  <div class="col-md-5 mt-2">
+  <div class="col-6">
+    <form [formGroup]="formulario">
+      <mat-form-field class="col-6">
+        <mat-label>Filtrar curso</mat-label>
+        <input
+          type="text"
+          matInput
+          formControlName="filtroCurso"
+          (keyup)="filtrarCurso($event)"
+        />
+      </mat-form-field>
+      <mat-form-field class="col-6">
+        <mat-label>Filtrar alumno</mat-label>
+        <input
+          type="text"
+          matInput
+          formControlName="filtroAlumno"
+          (keyup)="filtrarAlumno($event)"
+        />
+      </mat-form-field>
+    </form>
+  </div>
+  <div class="col-2 mt-2" style="align-content: flex-start">
     <div class="d-flex justify-content-center w-100 mb-3">
       <button mat-raised-button (click)="openDialog()" color="primary">
         Agregar inscripcion

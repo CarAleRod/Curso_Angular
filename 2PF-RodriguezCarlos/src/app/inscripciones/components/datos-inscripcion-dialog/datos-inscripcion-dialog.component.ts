@@ -24,7 +24,9 @@ export class DatosInscripcionDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<DatosInscripcionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: I_InscripcionConNombre
   ) {
-    this.cursos = this.cursosService.cursos;
+    this.cursos = this.cursosService.cursos.filter(
+      (curso) => curso.inscripcionAbierta == 'Si'
+    );
     this.alumnos = this.alumnosService.alumnos;
   }
 

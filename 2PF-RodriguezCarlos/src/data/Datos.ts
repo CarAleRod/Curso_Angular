@@ -15,7 +15,7 @@ export class BaseDeDatos {
     },
     {
       id: 2,
-      nombre: 'Angular',
+      nombre: 'Javascript',
       comision: '32320',
       profesor: 'Fernando',
       fechaInicio: new Date(2022, 2, 1),

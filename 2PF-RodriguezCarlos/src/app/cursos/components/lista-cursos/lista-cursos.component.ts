@@ -47,6 +47,19 @@ export class ListaCursosComponent implements OnInit, OnDestroy {
         console.error(error);
       },
     });
+
+    this.dataSource.filterPredicate = function (
+      curso: I_Curso,
+      filtro: string
+    ) {
+      return (
+        curso.nombre.toLocaleLowerCase().includes(filtro.toLocaleLowerCase()) ||
+        curso.comision
+          .toLocaleLowerCase()
+          .includes(filtro.toLocaleLowerCase()) ||
+        curso.profesor.toLocaleLowerCase().includes(filtro.toLocaleLowerCase())
+      );
+    };
   }
 
   editar(id: number) {
@@ -102,18 +115,6 @@ export class ListaCursosComponent implements OnInit, OnDestroy {
 
   filtrar(event: Event) {
     const valorFiltro = (event.target as HTMLInputElement).value;
-    this.dataSource.filterPredicate = function (
-      curso: I_Curso,
-      filtro: string
-    ) {
-      return (
-        curso.nombre.toLocaleLowerCase().includes(filtro.toLocaleLowerCase()) ||
-        curso.comision
-          .toLocaleLowerCase()
-          .includes(filtro.toLocaleLowerCase()) ||
-        curso.profesor.toLocaleLowerCase().includes(filtro.toLocaleLowerCase())
-      );
-    };
     this.dataSource.filter = valorFiltro.trim().toLowerCase();
   }
 
