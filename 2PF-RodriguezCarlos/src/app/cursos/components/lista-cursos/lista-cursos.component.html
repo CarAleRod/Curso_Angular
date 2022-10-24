@@ -8,7 +8,7 @@
 <div class="row">
   <mat-form-field class="col-md-5">
     <mat-label>Filtrar curso</mat-label>
-    <input type="text" matInput (keyup)="filtrar($event)" />
+    <input type="text" matInput (keyup)="filtrar($event)" #input />
   </mat-form-field>
   <div class="col-md-5 mt-2">
     <div class="d-flex justify-content-center w-100 mb-3">
@@ -20,40 +20,54 @@
 </div>
 <div class="row">
   <div class="col-md-12">
-    <mat-table [dataSource]="dataSource" class="mat-elevation-z8 listcursos">
+    <mat-table
+      [dataSource]="dataSource"
+      matSort
+      class="mat-elevation-z8 listcursos"
+    >
       <ng-container matColumnDef="nombre">
-        <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Nombre</mat-header-cell
+        >
         <mat-cell *matCellDef="let curso">
           {{ curso.nombre | titlecase }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="comision">
-        <mat-header-cell *matHeaderCellDef>Comision</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Comision</mat-header-cell
+        >
         <mat-cell *matCellDef="let curso"> {{ curso.comision }} </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="profesor">
-        <mat-header-cell *matHeaderCellDef>Profesor</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Profesor</mat-header-cell
+        >
         <mat-cell *matCellDef="let curso">
           {{ curso.profesor | titlecase }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="fechaInicio">
-        <mat-header-cell *matHeaderCellDef>Inicio</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Inicio</mat-header-cell
+        >
         <mat-cell *matCellDef="let curso">{{
           curso.fechaInicio | date: "dd/MM/YYYY"
         }}</mat-cell>
       </ng-container>
       <ng-container matColumnDef="fechaFin">
-        <mat-header-cell *matHeaderCellDef>Fin</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Fin</mat-header-cell>
         <mat-cell *matCellDef="let curso">{{
           curso.fechaFin | date: "dd/MM/YYYY"
         }}</mat-cell>
       </ng-container>
       <ng-container matColumnDef="inscripcionAbierta">
-        <mat-header-cell *matHeaderCellDef>Abierto</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header
+          >Abierto</mat-header-cell
+        >
         <mat-cell *matCellDef="let curso">{{
           curso.inscripcionAbierta
         }}</mat-cell>
@@ -89,6 +103,15 @@
 
       <mat-header-row *matHeaderRowDef="columnas"></mat-header-row>
       <mat-row *matRowDef="let row; columns: columnas"></mat-row>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">
+          No hay datos que coincidan con "{{ input.value }}"
+        </td>
+      </tr>
     </mat-table>
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 100]"
+      aria-label="Seleccione la página"
+    ></mat-paginator>
   </div>
 </div>

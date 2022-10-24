@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,14 +16,22 @@ import { I_Inscripcion } from '../../models/inscripcion';
 import { I_InscripcionConNombre } from '../../models/InscripcionConNombre';
 import { InscripcionesService } from '../../services/inscripciones.service';
 import { DatosInscripcionDialogComponent } from '../datos-inscripcion-dialog/datos-inscripcion-dialog.component';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-lista-inscripciones',
   templateUrl: './lista-inscripciones.component.html',
   styleUrls: ['./lista-inscripciones.component.css'],
 })
-export class ListaInscripcionesComponent implements OnInit, OnDestroy {
+export class ListaInscripcionesComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   subscripcion!: Subscription;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   columnas: string[] = [
     'cursoId',
     'cursoNombre',
@@ -74,6 +88,11 @@ export class ListaInscripcionesComponent implements OnInit, OnDestroy {
           console.error(error);
         },
       });
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   editar(id: number) {

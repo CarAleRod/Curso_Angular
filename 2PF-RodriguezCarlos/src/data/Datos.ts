@@ -46,7 +46,7 @@ export class BaseDeDatos {
     {
       id: 1,
       nombre: 'Leandro',
-      apellido: 'RdR',
+      apellido: 'Rodriguez',
       edad: 29,
       genero: 'M',
       fechaDeIngreso: new Date(2021, 11, 28),
@@ -54,7 +54,7 @@ export class BaseDeDatos {
     {
       id: 2,
       nombre: 'Gonzalo',
-      apellido: 'RdR',
+      apellido: 'Suarez',
       edad: 26,
       genero: 'M',
       fechaDeIngreso: new Date(2022, 4, 14),
@@ -62,7 +62,7 @@ export class BaseDeDatos {
     {
       id: 3,
       nombre: 'Gabriel',
-      apellido: 'RdR',
+      apellido: 'Gonzalez',
       edad: 24,
       genero: 'M',
       fechaDeIngreso: new Date(2022, 6, 20),
@@ -70,7 +70,7 @@ export class BaseDeDatos {
     {
       id: 4,
       nombre: 'Luciano',
-      apellido: 'RdR',
+      apellido: 'Martinez',
       edad: 19,
       genero: 'M',
       fechaDeIngreso: new Date(2022, 5, 6),
@@ -78,7 +78,7 @@ export class BaseDeDatos {
     {
       id: 5,
       nombre: 'Marisa',
-      apellido: 'dR',
+      apellido: 'Del Rio',
       edad: 44,
       genero: 'F',
       fechaDeIngreso: new Date(2020, 10, 31),

@@ -1,21 +1,32 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { InscripcionesService } from 'src/app/inscripciones/services/inscripciones.service';
 import { I_Alumno } from '../../models/alumno';
 import { AlumnosService } from '../../services/alumnos.service';
 import { DatosAlumnoDialogComponent } from '../datos-alumno-dialog/datos-alumno-dialog.component';
 import { DetalleAlumnoDialogComponent } from '../detalle-alumno-dialog/detalle-alumno-dialog.component';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-lista-alumnos',
   templateUrl: './lista-alumnos.component.html',
   styleUrls: ['./lista-alumnos.component.css'],
 })
-export class ListaAlumnosComponent implements OnInit, OnDestroy {
+export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   subscripcion!: Subscription;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   columnas: string[] = [
     'nombre',
     'edad',
@@ -28,8 +39,7 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy {
   constructor(
     private alumnosService: AlumnosService,
     private inscripcionService: InscripcionesService,
-    private dialog: MatDialog,
-    private router: Router
+    private dialog: MatDialog
   ) {}
 
   ngOnDestroy(): void {
@@ -56,6 +66,11 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy {
         alumno.apellido.toLocaleLowerCase().includes(filtro.toLocaleLowerCase())
       );
     };
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   editar(id: number) {
