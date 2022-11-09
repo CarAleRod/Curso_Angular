@@ -1,0 +1,27 @@
+<p>
+  <mat-toolbar color="primary">
+    <div class="col-md-3">
+      <span
+        routerLink="home"
+        appHeader20
+        class="nav-link text-white"
+        style="cursor: pointer"
+        >R-eCursos</span
+      >
+    </div>
+    <div class="col-md-6">
+      <span class="example-spacer"></span>
+    </div>
+
+    <div *ngIf="sesion$ | async as sesion" class="col-md-3">
+      <span
+        style="text-align: right; height: 10px"
+        *ngIf="sesion.usuarioActivo"
+        class="nav-link text-white"
+        ><p style="font-size: small">
+          Usuario {{ sesion.usuarioActivo.usuario | titlecase }}
+        </p></span
+      >
+    </div>
+  </mat-toolbar>
+</p>
