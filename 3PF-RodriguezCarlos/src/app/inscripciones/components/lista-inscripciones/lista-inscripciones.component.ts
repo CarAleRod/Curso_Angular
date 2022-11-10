@@ -20,6 +20,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { I_Curso } from 'src/app/cursos/models/curso';
 import { I_Alumno } from 'src/app/alumnos/models/alumno';
+import { SesionService } from 'src/app/core/services/sesion.service';
 
 @Component({
   selector: 'app-lista-inscripciones',
@@ -51,6 +52,7 @@ export class ListaInscripcionesComponent
     private inscripcionesService: InscripcionesService,
     private cursosService: CursosService,
     private alumnosService: AlumnosService,
+    private sesionService: SesionService,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private matSnackBar: MatSnackBar
@@ -63,6 +65,7 @@ export class ListaInscripcionesComponent
   }
 
   ngOnInit(): void {
+    this.sesionService.establecerMenuActivo('Inscripciones');
     this.formulario = this.formBuilder.group({
       filtroCurso: ['', []],
       filtroAlumno: ['', []],

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { InscripcionesService } from 'src/app/inscripciones/services/inscripciones.service';
 import { I_Alumno } from '../../models/alumno';
 import { AlumnosService } from '../../services/alumnos.service';
@@ -15,6 +15,8 @@ import { DatosAlumnoDialogComponent } from '../datos-alumno-dialog/datos-alumno-
 import { DetalleAlumnoDialogComponent } from '../detalle-alumno-dialog/detalle-alumno-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { SesionService } from 'src/app/core/services/sesion.service';
+import { I_Sesion } from 'src/app/core/models/sesion';
 
 @Component({
   selector: 'app-lista-alumnos',
@@ -23,7 +25,7 @@ import { MatSort } from '@angular/material/sort';
 })
 export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   subscripcion!: Subscription;
-
+  sesion$!: Observable<I_Sesion>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -39,6 +41,7 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private alumnosService: AlumnosService,
     private inscripcionService: InscripcionesService,
+    private sesionService: SesionService,
     private dialog: MatDialog
   ) {}
 
@@ -49,6 +52,8 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.sesionService.establecerMenuActivo('Alumnos');
+    this.sesion$ = this.sesionService.obtenerSesion();
     this.actualizarLista();
 
     this.dataSource.filterPredicate = function (
@@ -70,7 +75,7 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
         this.dataSource.data = alumnos;
       },
       error: (error) => {
-        console.error(error);
+        alert('hubo un error al obtener los alumnos: ' + error.message);
       },
     });
   }
@@ -89,7 +94,6 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
       height: '80%',
       data: alumnoData,
     });
-
     dialog.beforeClosed().subscribe((res) => {
       if (res) {
         this.alumnosService

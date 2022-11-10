@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { I_Usuario } from 'src/app/usuarios/models/usuario';
 import { I_Sesion } from '../models/sesion';
 
@@ -7,30 +7,39 @@ import { I_Sesion } from '../models/sesion';
   providedIn: 'root',
 })
 export class SesionService {
+  sesion!: I_Sesion;
   sesionSubject!: BehaviorSubject<I_Sesion>;
   sesion$!: Observable<I_Sesion>;
   constructor() {
-    const sesion: I_Sesion = {
+    this.sesion = {
       sesionActiva: false,
     };
-    this.sesionSubject = new BehaviorSubject(sesion);
+    this.sesionSubject = new BehaviorSubject(this.sesion);
     this.sesion$ = this.sesionSubject.asObservable();
   }
 
-  establecerSesion(usuario: I_Usuario) {
-    const sesion: I_Sesion = {
+  establecerSesion(usuario: I_Usuario, menu: string) {
+    this.sesion = {
       sesionActiva: true,
       usuarioActivo: usuario,
+      menuActivo: menu,
     };
 
-    this.sesionSubject.next(sesion);
+    this.sesionSubject.next(this.sesion);
   }
-
+  establecerMenuActivo(menu: string) {
+    this.sesion.menuActivo = menu;
+    this.sesionSubject.next(this.sesion);
+  }
   borrarSesion() {
-    const sesion: I_Sesion = {
+    this.sesion = {
       sesionActiva: false,
     };
 
-    this.sesionSubject.next(sesion);
+    this.sesionSubject.next(this.sesion);
+  }
+
+  obtenerSesion(): Observable<I_Sesion> {
+    return this.sesionSubject.asObservable();
   }
 }

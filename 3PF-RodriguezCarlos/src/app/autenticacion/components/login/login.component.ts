@@ -38,7 +38,7 @@ export class LoginComponent implements OnInit {
             usuarioBase.usuario == usuarioForm && usuarioBase.clave == claveForm
         );
         if (usuarioValido.length > 0) {
-          this.sesionService.establecerSesion(usuarioValido[0]);
+          this.sesionService.establecerSesion(usuarioValido[0], 'home');
           this.router.navigate(['home']);
         } else {
           this.openSnackBar(

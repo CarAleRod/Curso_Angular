@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './core/components/home/home.component';
 import { PageNotFoundComponent } from './core/components/page-not-found/page-not-found.component';
+import { AdminGuard } from './core/guards/admin.guard';
 import { AutenticacionGuard } from './core/guards/autenticacion.guard';
 
 const routes: Routes = [
@@ -32,6 +33,12 @@ const routes: Routes = [
         (m) => m.InscripcionesModule
       ),
     canActivate: [AutenticacionGuard],
+  },
+  {
+    path: 'usuarios',
+    loadChildren: () =>
+      import('./usuarios/usuarios.module').then((m) => m.UsuariosModule),
+    canActivate: [AutenticacionGuard, AdminGuard],
   },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent },

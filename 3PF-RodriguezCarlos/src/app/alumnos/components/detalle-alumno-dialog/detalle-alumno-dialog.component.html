@@ -47,12 +47,16 @@
 <div class="row">
   <mat-form-field class="col-md-5">
     <mat-label>Filtrar curso</mat-label>
-    <input type="text" matInput (keyup)="filtrar($event)" />
+    <input type="text" matInput (keyup)="filtrar($event)" id="filtroCurso" />
   </mat-form-field>
 </div>
 <div class="row">
   <div class="col-md-12">
-    <mat-table [dataSource]="dataSource" class="mat-elevation-z8 listcursos">
+    <mat-table
+      [dataSource]="dataSource"
+      class="mat-elevation-z8 listcursos"
+      id="lista-cursos"
+    >
       <ng-container matColumnDef="nombre">
         <mat-header-cell *matHeaderCellDef>Nombre</mat-header-cell>
         <mat-cell *matCellDef="let cursoInscripcion">

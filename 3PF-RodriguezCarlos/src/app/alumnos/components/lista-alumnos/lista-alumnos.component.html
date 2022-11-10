@@ -8,13 +8,21 @@
 <div class="row">
   <mat-form-field class="col-md-5">
     <mat-label>Filtrar alumnos</mat-label>
-    <input type="text" matInput (keyup)="filtrar($event)" #input />
+    <input
+      type="text"
+      matInput
+      (keyup)="filtrar($event)"
+      #input
+      id="filtroAlumno"
+    />
   </mat-form-field>
-  <div class="col-md-5 mt-2">
-    <div class="d-flex justify-content-center w-100 mb-3">
-      <button mat-raised-button (click)="openDialog()" color="primary">
-        Agregar alumnos
-      </button>
+  <div *ngIf="sesion$ | async as sesion" class="col-md-5 mt-2">
+    <div *ngIf="sesion.usuarioActivo?.esAdmin">
+      <div class="d-flex justify-content-center w-100 mb-3">
+        <button mat-raised-button (click)="openDialog()" color="primary">
+          Agregar alumnos
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -61,29 +69,33 @@
       <ng-container matColumnDef="acciones">
         <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
         <mat-cell *matCellDef="let alumno">
-          <mat-icon
-            class="cursor-pointer"
-            color="primary"
-            matTooltip="Editar"
-            (click)="editar(alumno.id)"
-            >edit</mat-icon
-          >
-          <mat-icon
-            class="cursor-pointer"
-            color="primary"
-            matTooltip="Borrar"
-            (click)="borrar(alumno.id)"
-            >delete</mat-icon
-          >
-          <mat-icon
-            class="cursor-pointer"
-            color="primary"
-            matTooltip="Ver detalle"
-            (click)="verDetalle(alumno.id)"
-            ><span class="material-symbols-outlined">
-              more_horiz
-            </span></mat-icon
-          >
+          <div *ngIf="sesion$ | async as sesion">
+            <mat-icon
+              *ngIf="sesion.usuarioActivo?.esAdmin"
+              class="cursor-pointer"
+              color="primary"
+              matTooltip="Editar"
+              (click)="editar(alumno.id)"
+              >edit</mat-icon
+            >
+            <mat-icon
+              *ngIf="sesion.usuarioActivo?.esAdmin"
+              class="cursor-pointer"
+              color="primary"
+              matTooltip="Borrar"
+              (click)="borrar(alumno.id)"
+              >delete</mat-icon
+            >
+            <mat-icon
+              class="cursor-pointer"
+              color="primary"
+              matTooltip="Ver detalle"
+              (click)="verDetalle(alumno.id)"
+              ><span class="material-symbols-outlined">
+                more_horiz
+              </span></mat-icon
+            >
+          </div>
         </mat-cell>
       </ng-container>
 

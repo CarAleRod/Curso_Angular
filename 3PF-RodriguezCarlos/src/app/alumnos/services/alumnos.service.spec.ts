@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { I_Alumno } from '../models/alumno';
 import { HttpErrorResponse } from '@angular/common/http';
 
-fdescribe('AlumnosService', () => {
+describe('AlumnosService', () => {
   let service: AlumnosService;
   let httpClientSpy: {
     get: jasmine.Spy;

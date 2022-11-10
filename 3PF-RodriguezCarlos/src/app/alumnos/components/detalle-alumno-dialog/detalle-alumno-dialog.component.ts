@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { I_Alumno } from '../../models/alumno';
   templateUrl: './detalle-alumno-dialog.component.html',
   styleUrls: ['./detalle-alumno-dialog.component.css'],
 })
-export class DetalleAlumnoDialogComponent implements OnInit {
+export class DetalleAlumnoDialogComponent implements OnInit, OnDestroy {
   subscripcion!: Subscription;
   alumno!: I_Alumno;
   columnas: string[] = [
@@ -36,6 +36,11 @@ export class DetalleAlumnoDialogComponent implements OnInit {
     this.alumno = data;
   }
 
+  ngOnDestroy(): void {
+    if (this.subscripcion) {
+      this.subscripcion.unsubscribe();
+    }
+  }
   ngOnInit(): void {
     this.actualizarLista();
   }
@@ -56,7 +61,9 @@ export class DetalleAlumnoDialogComponent implements OnInit {
                     data.push({ ...curso, inscripcionId: inscripcion.id });
                   }
                 },
-                complete: () => (this.dataSource.data = data),
+                complete: () => {
+                  this.dataSource.data = data;
+                },
               });
             });
           } else {
@@ -64,7 +71,7 @@ export class DetalleAlumnoDialogComponent implements OnInit {
           }
         },
         error: (error) => {
-          console.error(error);
+          alert('hubo un error al obtener las inscripciones: ' + error.message);
         },
       });
   }

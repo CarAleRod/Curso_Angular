@@ -9,11 +9,21 @@
         >R-eCursos</span
       >
     </div>
-    <div class="col-md-6">
+    <div class="col-md-3">
       <span class="example-spacer"></span>
     </div>
 
-    <div *ngIf="sesion$ | async as sesion" class="col-md-3">
+    <div *ngIf="sesion" class="col-md-3">
+      <span
+        style="text-align: left; height: 10px"
+        *ngIf="sesion.menuActivo"
+        class="nav-link text-white"
+        ><p style="font-size: small">
+          {{ sesion.menuActivo | titlecase }}
+        </p></span
+      >
+    </div>
+    <div *ngIf="sesion" class="col-md-3">
       <span
         style="text-align: right; height: 10px"
         *ngIf="sesion.usuarioActivo"

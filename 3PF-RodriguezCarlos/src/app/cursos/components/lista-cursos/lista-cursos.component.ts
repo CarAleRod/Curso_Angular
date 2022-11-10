@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { CursosService } from '../../services/cursos.service';
 import { I_Curso } from '../../models/curso';
 import { DatosCursoDialogComponent } from '../datos-curso-dialog/datos-curso-dialog.component';
@@ -15,6 +15,8 @@ import { InscripcionesService } from 'src/app/inscripciones/services/inscripcion
 import { DetalleCursoDialogComponent } from '../detalle-curso-dialog/detalle-curso-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { SesionService } from 'src/app/core/services/sesion.service';
+import { I_Sesion } from 'src/app/core/models/sesion';
 
 @Component({
   selector: 'app-lista-cursos',
@@ -23,6 +25,7 @@ import { MatSort } from '@angular/material/sort';
 })
 export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
   subscripcion!: Subscription;
+  sesion$!: Observable<I_Sesion>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -41,6 +44,7 @@ export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private cursosService: CursosService,
     private inscripcionService: InscripcionesService,
+    private sesionService: SesionService,
     private dialog: MatDialog
   ) {}
   ngOnDestroy(): void {
@@ -50,6 +54,8 @@ export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.sesionService.establecerMenuActivo('Cursos');
+    this.sesion$ = this.sesionService.obtenerSesion();
     this.actualizarLista();
 
     this.dataSource.filterPredicate = function (

@@ -13,6 +13,15 @@
         <a routerLink="inscripciones" class="nav-link text-white">
           Inscripciones
         </a>
+        <div *ngIf="sesion$ | async as sesion">
+          <a
+            *ngIf="sesion.usuarioActivo?.esAdmin"
+            routerLink="usuarios"
+            class="nav-link text-white"
+          >
+            Usuarios
+          </a>
+        </div>
         <hr />
         <a
           (click)="logout()"
