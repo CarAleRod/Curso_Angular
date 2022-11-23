@@ -15,7 +15,6 @@ import { I_Sesion } from 'src/app/core/models/sesion';
 import { cargarMenuActivo } from 'src/app/core/state/sesion.actions';
 import { I_Usuario } from '../../models/usuario';
 import { I_UsuarioState } from '../../models/usuario.state';
-import { UsuariosService } from '../../service/usuarios.service';
 import {
   agregarUsuario,
   cargarUsuarios,
@@ -46,9 +45,7 @@ export class ListaUsuariosComponent
     private storeUsuarios: Store<I_UsuarioState>,
     private storeSesion: Store<I_Sesion>,
     private dialog: MatDialog
-  ) {
-    this.storeUsuarios.dispatch(cargarUsuarios());
-  }
+  ) {}
 
   ngOnDestroy(): void {
     if (this.subscripcion) {

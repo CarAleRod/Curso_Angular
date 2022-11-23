@@ -7,6 +7,13 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UsuariosService } from '../usuarios/service/usuarios.service';
+import { StoreModule } from '@ngrx/store';
+import {
+  usuariosFeatureKey,
+  usuariosReducer,
+} from '../usuarios/state/usuarios.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { UsuariosEffects } from '../usuarios/state/usuarios.effects';
 
 @NgModule({
   declarations: [LoginComponent],
@@ -16,6 +23,8 @@ import { UsuariosService } from '../usuarios/service/usuarios.service';
     SharedModule,
     MaterialModule,
     ReactiveFormsModule,
+    StoreModule.forFeature(usuariosFeatureKey, usuariosReducer),
+    EffectsModule.forFeature([UsuariosEffects]),
   ],
   providers: [UsuariosService],
 })
