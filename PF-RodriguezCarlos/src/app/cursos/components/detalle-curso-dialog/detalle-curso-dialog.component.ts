@@ -1,11 +1,14 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { I_AlumnoInscripcion } from 'src/app/alumnos/models/alumnoInscripcion';
 import { AlumnosService } from 'src/app/alumnos/services/alumnos.service';
 import { I_Inscripcion } from 'src/app/inscripciones/models/inscripcion';
-import { InscripcionesService } from 'src/app/inscripciones/services/inscripciones.service';
+import { I_InscripcionState } from 'src/app/inscripciones/models/inscripcion.state';
+import { eliminarInscripcion } from 'src/app/inscripciones/state/inscripciones.actions';
+import { selectInscripciones } from 'src/app/inscripciones/state/inscripciones.selectors';
 import { I_Curso } from '../../models/curso';
 
 @Component({
@@ -27,7 +30,7 @@ export class DetalleCursoDialogComponent implements OnInit {
     new MatTableDataSource<I_AlumnoInscripcion>();
 
   constructor(
-    private inscripcionesService: InscripcionesService,
+    private storeInscripciones: Store<I_InscripcionState>,
     private alumnosService: AlumnosService,
     public dialogRef: MatDialogRef<DetalleCursoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: I_Curso
@@ -40,8 +43,8 @@ export class DetalleCursoDialogComponent implements OnInit {
   }
 
   actualizarLista() {
-    this.subscripcion = this.inscripcionesService
-      .obtenerInscripciones()
+    this.subscripcion = this.storeInscripciones
+      .select(selectInscripciones)
       .subscribe({
         next: (inscripciones: I_Inscripcion[]) => {
           let data: I_AlumnoInscripcion[] = [];
@@ -72,9 +75,9 @@ export class DetalleCursoDialogComponent implements OnInit {
   }
 
   borrar(inscripcionId: number) {
-    this.inscripcionesService
-      .borrarInscripcion(inscripcionId)
-      .subscribe((inscripcion) => this.actualizarLista());
+    this.storeInscripciones.dispatch(
+      eliminarInscripcion({ id: inscripcionId })
+    );
   }
 
   filtrar(event: Event) {

@@ -10,11 +10,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { AlumnosService } from 'src/app/alumnos/services/alumnos.service';
-import { CursosService } from 'src/app/cursos/services/cursos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { I_Inscripcion } from '../../models/inscripcion';
 import { I_InscripcionConNombre } from '../../models/InscripcionConNombre';
-import { InscripcionesService } from '../../services/inscripciones.service';
 import { DatosInscripcionDialogComponent } from '../datos-inscripcion-dialog/datos-inscripcion-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -23,6 +21,17 @@ import { I_Alumno } from 'src/app/alumnos/models/alumno';
 import { I_Sesion } from 'src/app/core/models/sesion';
 import { Store } from '@ngrx/store';
 import { cargarMenuActivo } from 'src/app/core/state/sesion.actions';
+import { I_CursoState } from 'src/app/cursos/models/curso.state';
+import { I_InscripcionState } from '../../models/inscripcion.state';
+import { cargarCursos } from 'src/app/cursos/state/cursos.actions';
+import { selectCursos } from 'src/app/cursos/state/cursos.selectors';
+import { selectInscripciones } from '../../state/inscripciones.selectors';
+import {
+  agregarInscripcion,
+  cargarInscripciones,
+  editarInscripcion,
+  eliminarInscripcion,
+} from '../../state/inscripciones.actions';
 
 @Component({
   selector: 'app-lista-inscripciones',
@@ -51,14 +60,17 @@ export class ListaInscripcionesComponent
   formulario!: FormGroup;
 
   constructor(
-    private inscripcionesService: InscripcionesService,
-    private cursosService: CursosService,
+    private storeInscripciones: Store<I_InscripcionState>,
+    private storeCursos: Store<I_CursoState>,
     private alumnosService: AlumnosService,
     private storeSesion: Store<I_Sesion>,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private matSnackBar: MatSnackBar
-  ) {}
+  ) {
+    this.storeCursos.dispatch(cargarCursos());
+    this.storeInscripciones.dispatch(cargarInscripciones());
+  }
 
   ngOnDestroy(): void {
     if (this.subscripcion) {
@@ -79,13 +91,13 @@ export class ListaInscripcionesComponent
   }
 
   actualizarLista() {
-    this.cursosService.obtenerCursos().subscribe((cursos: I_Curso[]) => {
+    this.storeCursos.select(selectCursos).subscribe((cursos: I_Curso[]) => {
       this.cursos = cursos;
       this.alumnosService.obtenerAlumnos().subscribe((alumnos: I_Alumno[]) => {
         this.alumnos = alumnos;
 
-        this.subscripcion = this.inscripcionesService
-          .obtenerInscripciones()
+        this.subscripcion = this.storeInscripciones
+          .select(selectInscripciones)
           .subscribe({
             next: (inscripciones: I_Inscripcion[]) => {
               let data: I_InscripcionConNombre[] = [];
@@ -133,7 +145,11 @@ export class ListaInscripcionesComponent
 
     dialog.beforeClosed().subscribe((res) => {
       if (res) {
-        this.inscripcionesService.obtenerInscripciones().subscribe({
+        const newData: I_Inscripcion = {
+          ...res,
+          id: id,
+        };
+        this.storeInscripciones.select(selectInscripciones).subscribe({
           next: (inscripciones: I_Inscripcion[]) => {
             let existeInsc = false;
             inscripciones.forEach((inscripcion) => {
@@ -145,9 +161,9 @@ export class ListaInscripcionesComponent
               }
             });
             if (!existeInsc) {
-              this.inscripcionesService
-                .modificarInscripcion(id, res)
-                .subscribe((inscripcion) => this.actualizarLista());
+              this.storeInscripciones.dispatch(
+                editarInscripcion({ inscripcion: newData })
+              );
             } else {
               this.openSnackBar(
                 'Ya existe esta subscripción',
@@ -162,9 +178,7 @@ export class ListaInscripcionesComponent
   }
 
   borrar(id: number) {
-    this.inscripcionesService
-      .borrarInscripcion(id)
-      .subscribe((inscripcion) => this.actualizarLista());
+    this.storeInscripciones.dispatch(eliminarInscripcion({ id }));
   }
   openDialog() {
     let dialog = this.dialog.open(DatosInscripcionDialogComponent, {
@@ -174,35 +188,38 @@ export class ListaInscripcionesComponent
 
     dialog.beforeClosed().subscribe((res) => {
       if (res) {
-        this.inscripcionesService.obtenerInscripciones().subscribe({
-          next: (inscripciones: I_Inscripcion[]) => {
-            let existeInsc = false;
-            inscripciones.forEach((inscripcion) => {
-              if (
-                inscripcion.alumnoId == res.alumnoId &&
-                inscripcion.cursoId == res.cursoId
-              ) {
-                existeInsc = true;
+        this.storeInscripciones
+          .select(selectInscripciones)
+          .subscribe({
+            next: (inscripciones: I_Inscripcion[]) => {
+              let existeInsc = false;
+              inscripciones.forEach((inscripcion) => {
+                if (
+                  inscripcion.alumnoId == res.alumnoId &&
+                  inscripcion.cursoId == res.cursoId
+                ) {
+                  existeInsc = true;
+                }
+              });
+              if (!existeInsc) {
+                let newId: number = this.obtenerProximoId();
+                let newData = {
+                  ...res,
+                  id: newId,
+                };
+                this.storeInscripciones.dispatch(
+                  agregarInscripcion({ inscripcion: newData })
+                );
+              } else {
+                this.openSnackBar(
+                  'Ya existe esta subscripción',
+                  'Cancelado',
+                  3000
+                );
               }
-            });
-            if (!existeInsc) {
-              let newId: number = this.obtenerProximoId();
-              let newData = {
-                ...res,
-                id: newId,
-              };
-              this.inscripcionesService
-                .agregarInscripcion(newData)
-                .subscribe((inscripcion) => this.actualizarLista());
-            } else {
-              this.openSnackBar(
-                'Ya existe esta subscripción',
-                'Cancelado',
-                3000
-              );
-            }
-          },
-        });
+            },
+          })
+          .unsubscribe();
       }
     });
   }

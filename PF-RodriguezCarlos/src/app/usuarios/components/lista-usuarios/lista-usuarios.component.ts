@@ -14,7 +14,15 @@ import { Subscription } from 'rxjs';
 import { I_Sesion } from 'src/app/core/models/sesion';
 import { cargarMenuActivo } from 'src/app/core/state/sesion.actions';
 import { I_Usuario } from '../../models/usuario';
+import { I_UsuarioState } from '../../models/usuario.state';
 import { UsuariosService } from '../../service/usuarios.service';
+import {
+  agregarUsuario,
+  cargarUsuarios,
+  editarUsuario,
+  eliminarUsuario,
+} from '../../state/usuarios.actions';
+import { selectUsuarios } from '../../state/usuarios.selectors';
 import { DatosUsuarioDialogComponent } from '../datos-usuario-dialog/datos-usuario-dialog.component';
 
 @Component({
@@ -35,10 +43,12 @@ export class ListaUsuariosComponent
     new MatTableDataSource<I_Usuario>();
 
   constructor(
-    private usuariosService: UsuariosService,
+    private storeUsuarios: Store<I_UsuarioState>,
     private storeSesion: Store<I_Sesion>,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.storeUsuarios.dispatch(cargarUsuarios());
+  }
 
   ngOnDestroy(): void {
     if (this.subscripcion) {
@@ -61,7 +71,7 @@ export class ListaUsuariosComponent
   }
 
   actualizarLista() {
-    this.subscripcion = this.usuariosService.obtenerUsuarios().subscribe({
+    this.subscripcion = this.storeUsuarios.select(selectUsuarios).subscribe({
       next: (usuarios: I_Usuario[]) => {
         this.dataSource.data = usuarios;
       },
@@ -89,17 +99,17 @@ export class ListaUsuariosComponent
     });
     dialog.beforeClosed().subscribe((res) => {
       if (res) {
-        this.usuariosService
-          .modificarUsuario(id, res)
-          .subscribe((usuario) => this.actualizarLista());
+        const newData: I_Usuario = {
+          ...res,
+          id: id,
+        };
+        this.storeUsuarios.dispatch(editarUsuario({ usuario: newData }));
       }
     });
   }
 
   borrar(id: number) {
-    this.usuariosService
-      .borrarUsuario(id)
-      .subscribe((usuario) => this.actualizarLista());
+    this.storeUsuarios.dispatch(eliminarUsuario({ id: id }));
   }
   openDialog() {
     let dialog = this.dialog.open(DatosUsuarioDialogComponent, {
@@ -114,9 +124,7 @@ export class ListaUsuariosComponent
           ...res,
           id: newId,
         };
-        this.usuariosService
-          .agregarUsuario(newData)
-          .subscribe((usuario) => this.actualizarLista());
+        this.storeUsuarios.dispatch(agregarUsuario({ usuario: newData }));
       }
     });
   }

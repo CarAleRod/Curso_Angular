@@ -10,7 +10,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subscription } from 'rxjs';
 import { I_Curso } from '../../models/curso';
 import { DatosCursoDialogComponent } from '../datos-curso-dialog/datos-curso-dialog.component';
-import { InscripcionesService } from 'src/app/inscripciones/services/inscripciones.service';
 import { DetalleCursoDialogComponent } from '../detalle-curso-dialog/detalle-curso-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -26,6 +25,8 @@ import {
 } from '../../state/cursos.actions';
 import { selectSesion } from 'src/app/core/state/sesion.selectors';
 import { cargarMenuActivo } from 'src/app/core/state/sesion.actions';
+import { I_InscripcionState } from 'src/app/inscripciones/models/inscripcion.state';
+import { borrarInscripcionPorCurso } from 'src/app/inscripciones/state/inscripciones.actions';
 
 @Component({
   selector: 'app-lista-cursos',
@@ -52,7 +53,7 @@ export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
 
   constructor(
     private storeCursos: Store<I_CursoState>,
-    private inscripcionService: InscripcionesService,
+    private storeInscripciones: Store<I_InscripcionState>,
     private storeSesion: Store<I_Sesion>,
     private dialog: MatDialog
   ) {
@@ -115,7 +116,6 @@ export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
           id: id,
         };
         this.storeCursos.dispatch(editarCurso({ curso: newData }));
-        // .subscribe((curso) => this.actualizarLista());
       }
     });
   }
@@ -134,9 +134,7 @@ export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
 
   borrar(id: number) {
     this.storeCursos.dispatch(eliminarCurso({ id: id }));
-    // .borrarCurso(id)
-    // .subscribe((curso) => this.actualizarLista());
-    this.inscripcionService.borrarInscripcionesPorCurso(id);
+    this.storeInscripciones.dispatch(borrarInscripcionPorCurso({ id: id }));
   }
 
   openDialog() {
@@ -153,8 +151,6 @@ export class ListaCursosComponent implements OnInit, OnDestroy, AfterViewInit {
           id: newId,
         };
         this.storeCursos.dispatch(agregarCurso({ curso: newData }));
-        // .agregarCurso(newData)
-        // .subscribe((curso) => this.actualizarLista());
       }
     });
   }
