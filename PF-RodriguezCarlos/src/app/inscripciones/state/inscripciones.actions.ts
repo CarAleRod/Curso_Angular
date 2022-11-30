@@ -28,3 +28,7 @@ export const borrarInscripcionPorCurso = createAction(
   '[Inscripciones] Eliminar inscripciones por curso',
   props<{ id: number }>()
 );
+export const borrarInscripcionPorAlumno = createAction(
+  '[Inscripciones] Eliminar inscripciones por alumno',
+  props<{ id: number }>()
+);

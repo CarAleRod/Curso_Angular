@@ -8,9 +8,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subscription } from 'rxjs';
-import { InscripcionesService } from 'src/app/inscripciones/services/inscripciones.service';
 import { I_Alumno } from '../../models/alumno';
-import { AlumnosService } from '../../services/alumnos.service';
 import { DatosAlumnoDialogComponent } from '../datos-alumno-dialog/datos-alumno-dialog.component';
 import { DetalleAlumnoDialogComponent } from '../detalle-alumno-dialog/detalle-alumno-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
@@ -19,6 +17,16 @@ import { I_Sesion } from 'src/app/core/models/sesion';
 import { Store } from '@ngrx/store';
 import { cargarMenuActivo } from 'src/app/core/state/sesion.actions';
 import { selectSesion } from 'src/app/core/state/sesion.selectors';
+import { I_AlumnoState } from '../../models/alumno.state';
+import {
+  agregarAlumno,
+  cargarAlumnos,
+  editarAlumno,
+  eliminarAlumno,
+} from '../../state/alumnos.actions';
+import { selectAlumnos } from '../../state/alumnos.selectors';
+import { I_InscripcionState } from 'src/app/inscripciones/models/inscripcion.state';
+import { borrarInscripcionPorAlumno } from 'src/app/inscripciones/state/inscripciones.actions';
 
 @Component({
   selector: 'app-lista-alumnos',
@@ -41,11 +49,13 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   dataSource: MatTableDataSource<I_Alumno> = new MatTableDataSource<I_Alumno>();
 
   constructor(
-    private alumnosService: AlumnosService,
-    private inscripcionService: InscripcionesService,
+    private storeAlumnos: Store<I_AlumnoState>,
+    private storeInscripciones: Store<I_InscripcionState>,
     private storeSesion: Store<I_Sesion>,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.storeAlumnos.dispatch(cargarAlumnos());
+  }
 
   ngOnDestroy(): void {
     if (this.subscripcion) {
@@ -72,7 +82,7 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   actualizarLista() {
-    this.subscripcion = this.alumnosService.obtenerAlumnos().subscribe({
+    this.subscripcion = this.storeAlumnos.select(selectAlumnos).subscribe({
       next: (alumnos: I_Alumno[]) => {
         this.dataSource.data = alumnos;
       },
@@ -98,9 +108,11 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     dialog.beforeClosed().subscribe((res) => {
       if (res) {
-        this.alumnosService
-          .modificarAlumno(id, res)
-          .subscribe((alumno) => this.actualizarLista());
+        const newData: I_Alumno = {
+          ...res,
+          id: id,
+        };
+        this.storeAlumnos.dispatch(editarAlumno({ alumno: newData }));
       }
     });
   }
@@ -120,10 +132,8 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   borrar(id: number) {
-    this.alumnosService
-      .borrarAlumno(id)
-      .subscribe((alumno) => this.actualizarLista());
-    this.inscripcionService.borrarInscripcionesPorAlumno(id);
+    this.storeAlumnos.dispatch(eliminarAlumno({ id }));
+    this.storeInscripciones.dispatch(borrarInscripcionPorAlumno({ id }));
   }
   openDialog() {
     let dialog = this.dialog.open(DatosAlumnoDialogComponent, {
@@ -139,9 +149,7 @@ export class ListaAlumnosComponent implements OnInit, OnDestroy, AfterViewInit {
           id: newId,
         };
         newData.fechaDeIngreso = new Date();
-        this.alumnosService
-          .agregarAlumno(newData)
-          .subscribe((alumno) => this.actualizarLista());
+        this.storeAlumnos.dispatch(agregarAlumno({ alumno: newData }));
       }
     });
   }

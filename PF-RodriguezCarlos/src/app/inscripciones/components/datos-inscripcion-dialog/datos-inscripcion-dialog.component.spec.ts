@@ -10,6 +10,9 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
+import { alumnosReducer } from 'src/app/alumnos/state/alumnos.reducer';
+import { StoreModule } from '@ngrx/store';
+import { cursosReducer } from 'src/app/cursos/state/cursos.reducer';
 
 describe('DatosInscripcionDialogComponent', () => {
   let component: DatosInscripcionDialogComponent;
@@ -24,6 +27,10 @@ describe('DatosInscripcionDialogComponent', () => {
         MatSelectModule,
         MatInputModule,
         BrowserAnimationsModule,
+        StoreModule.forRoot({
+          cursos: cursosReducer,
+          alumnos: alumnosReducer,
+        }),
       ],
       declarations: [DatosInscripcionDialogComponent],
       providers: [

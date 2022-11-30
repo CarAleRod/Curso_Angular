@@ -22,6 +22,11 @@ import {
 } from '../cursos/state/cursos.reducer';
 import { CursosEffects } from '../cursos/state/cursos.effects';
 import { CursosService } from '../cursos/services/cursos.service';
+import {
+  alumnosFeatureKey,
+  alumnosReducer,
+} from '../alumnos/state/alumnos.reducer';
+import { AlumnosEffects } from '../alumnos/state/alumnos.effects';
 
 @NgModule({
   declarations: [ListaInscripcionesComponent, DatosInscripcionDialogComponent],
@@ -35,6 +40,8 @@ import { CursosService } from '../cursos/services/cursos.service';
     StoreModule.forFeature(cursosFeatureKey, cursosReducer),
     EffectsModule.forFeature([InscripcionesEffects]),
     EffectsModule.forFeature([CursosEffects]),
+    StoreModule.forFeature(alumnosFeatureKey, alumnosReducer),
+    EffectsModule.forFeature([AlumnosEffects]),
   ],
   exports: [],
   providers: [AlumnosService, InscripcionesService, CursosService],

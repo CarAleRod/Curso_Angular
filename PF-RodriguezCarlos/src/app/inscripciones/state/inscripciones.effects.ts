@@ -78,6 +78,16 @@ export class InscripcionesEffects {
     );
   });
 
+  borrarInscripcionPorAlumno$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(InscripcionesActions.borrarInscripcionPorAlumno),
+      map(({ id }) =>
+        this.inscripcionesService.borrarInscripcionesPorAlumno(id)
+      ),
+      map(() => InscripcionesActions.cargarInscripciones())
+    );
+  });
+
   constructor(
     private actions$: Actions,
     private inscripcionesService: InscripcionesService

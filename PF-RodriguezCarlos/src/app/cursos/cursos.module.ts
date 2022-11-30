@@ -20,6 +20,11 @@ import {
 } from '../inscripciones/state/inscripciones.reducer';
 import { InscripcionesEffects } from '../inscripciones/state/inscripciones.effects';
 import { InscripcionesService } from '../inscripciones/services/inscripciones.service';
+import { AlumnosEffects } from '../alumnos/state/alumnos.effects';
+import {
+  alumnosFeatureKey,
+  alumnosReducer,
+} from '../alumnos/state/alumnos.reducer';
 
 @NgModule({
   declarations: [
@@ -37,6 +42,8 @@ import { InscripcionesService } from '../inscripciones/services/inscripciones.se
     EffectsModule.forFeature([CursosEffects]),
     StoreModule.forFeature(inscripcionesFeatureKey, inscripcionesReducer),
     EffectsModule.forFeature([InscripcionesEffects]),
+    StoreModule.forFeature(alumnosFeatureKey, alumnosReducer),
+    EffectsModule.forFeature([AlumnosEffects]),
   ],
   exports: [],
   providers: [AlumnosService, CursosService, InscripcionesService],

@@ -5,6 +5,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MaterialModule } from 'src/app/material/material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { StoreModule } from '@ngrx/store';
+import { alumnosReducer } from 'src/app/alumnos/state/alumnos.reducer';
+import { inscripcionesReducer } from 'src/app/inscripciones/state/inscripciones.reducer';
 describe('DetalleCursoDialogComponent', () => {
   let component: DetalleCursoDialogComponent;
   let fixture: ComponentFixture<DetalleCursoDialogComponent>;
@@ -16,6 +19,11 @@ describe('DetalleCursoDialogComponent', () => {
         MaterialModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,
+
+        StoreModule.forRoot({
+          inscripciones: inscripcionesReducer,
+          alumnos: alumnosReducer,
+        }),
       ],
       declarations: [DetalleCursoDialogComponent],
       providers: [

@@ -4,9 +4,9 @@ import { selectUsuariosState } from './usuarios.selectors';
 describe('Usuarios Selectors', () => {
   it('should select the feature state', () => {
     const result = selectUsuariosState({
-      [fromUsuarios.usuariosFeatureKey]: {}
+      [fromUsuarios.usuariosFeatureKey]: {},
     });
 
-    expect(result).toEqual({});
+    expect(result).toEqual(result);
   });
 });

@@ -9,7 +9,6 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { AlumnosService } from 'src/app/alumnos/services/alumnos.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { I_Inscripcion } from '../../models/inscripcion';
 import { I_InscripcionConNombre } from '../../models/InscripcionConNombre';
@@ -32,6 +31,9 @@ import {
   editarInscripcion,
   eliminarInscripcion,
 } from '../../state/inscripciones.actions';
+import { I_AlumnoState } from 'src/app/alumnos/models/alumno.state';
+import { selectAlumnos } from 'src/app/alumnos/state/alumnos.selectors';
+import { cargarAlumnos } from 'src/app/alumnos/state/alumnos.actions';
 
 @Component({
   selector: 'app-lista-inscripciones',
@@ -42,6 +44,7 @@ export class ListaInscripcionesComponent
   implements OnInit, OnDestroy, AfterViewInit
 {
   subscripcion!: Subscription;
+  subscripcionAlumnos!: Subscription;
   cursos!: I_Curso[];
   alumnos!: I_Alumno[];
 
@@ -62,19 +65,23 @@ export class ListaInscripcionesComponent
   constructor(
     private storeInscripciones: Store<I_InscripcionState>,
     private storeCursos: Store<I_CursoState>,
-    private alumnosService: AlumnosService,
+    private storeAlumnos: Store<I_AlumnoState>,
     private storeSesion: Store<I_Sesion>,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private matSnackBar: MatSnackBar
   ) {
     this.storeCursos.dispatch(cargarCursos());
+    this.storeAlumnos.dispatch(cargarAlumnos());
     this.storeInscripciones.dispatch(cargarInscripciones());
   }
 
   ngOnDestroy(): void {
     if (this.subscripcion) {
       this.subscripcion.unsubscribe();
+    }
+    if (this.subscripcionAlumnos) {
+      this.subscripcionAlumnos.unsubscribe();
     }
   }
 
@@ -91,39 +98,45 @@ export class ListaInscripcionesComponent
   }
 
   actualizarLista() {
-    this.storeCursos.select(selectCursos).subscribe((cursos: I_Curso[]) => {
-      this.cursos = cursos;
-      this.alumnosService.obtenerAlumnos().subscribe((alumnos: I_Alumno[]) => {
-        this.alumnos = alumnos;
+    this.subscripcion = this.storeCursos
+      .select(selectCursos)
+      .subscribe((cursos: I_Curso[]) => {
+        this.cursos = cursos;
+        this.subscripcionAlumnos = this.storeAlumnos
+          .select(selectAlumnos)
+          .subscribe((alumnos: I_Alumno[]) => {
+            this.alumnos = alumnos;
 
-        this.subscripcion = this.storeInscripciones
-          .select(selectInscripciones)
-          .subscribe({
-            next: (inscripciones: I_Inscripcion[]) => {
-              let data: I_InscripcionConNombre[] = [];
-              inscripciones.forEach((inscripcion) => {
-                let curso = this.cursos.find(
-                  (curso2) => curso2.id == inscripcion.cursoId
-                );
-                let alumno = this.alumnos.find(
-                  (alumno2) => alumno2.id == inscripcion.alumnoId
-                );
-                data.push({
-                  id: inscripcion.id,
-                  cursoId: inscripcion.cursoId,
-                  cursoNombre: curso!.nombre,
-                  alumnoId: inscripcion.alumnoId,
-                  alumnoNombre: alumno?.apellido + ' ' + alumno?.nombre,
-                });
+            this.subscripcion = this.storeInscripciones
+              .select(selectInscripciones)
+              .subscribe({
+                next: (inscripciones: I_Inscripcion[]) => {
+                  let data: I_InscripcionConNombre[] = [];
+                  inscripciones.forEach((inscripcion) => {
+                    let curso = this.cursos.find(
+                      (curso2) => curso2.id == inscripcion.cursoId
+                    );
+                    let alumno = this.alumnos.find(
+                      (alumno2) => alumno2.id == inscripcion.alumnoId
+                    );
+                    if (alumno && curso) {
+                      data.push({
+                        id: inscripcion.id,
+                        cursoId: inscripcion.cursoId,
+                        cursoNombre: curso!.nombre,
+                        alumnoId: inscripcion.alumnoId,
+                        alumnoNombre: alumno?.apellido + ' ' + alumno?.nombre,
+                      });
+                    }
+                  });
+                  this.dataSource.data = data;
+                },
+                error: (error) => {
+                  console.error(error);
+                },
               });
-              this.dataSource.data = data;
-            },
-            error: (error) => {
-              console.error(error);
-            },
           });
       });
-    });
   }
 
   ngAfterViewInit() {

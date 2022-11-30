@@ -20,9 +20,9 @@ export class InscripcionesService {
         let inscripcionesDelCurso = inscripciones.filter(
           (insc) => insc.cursoId == id
         );
-        inscripcionesDelCurso.forEach((inscripcionDelCurso) =>
-          this.borrarInscripcion(inscripcionDelCurso.id).subscribe()
-        );
+        inscripcionesDelCurso.forEach((inscripcionDelCurso) => {
+          this.borrarInscripcion(inscripcionDelCurso.id).subscribe();
+        });
       });
   }
   borrarInscripcionesPorAlumno(id: number) {
@@ -33,9 +33,9 @@ export class InscripcionesService {
         let inscripcionesDelAlumno = inscripciones.filter(
           (insc) => insc.alumnoId == id
         );
-        inscripcionesDelAlumno.forEach((inscripcionDelAlumno) =>
-          this.borrarInscripcion(inscripcionDelAlumno.id).subscribe()
-        );
+        inscripcionesDelAlumno.forEach((inscripcionDelAlumno) => {
+          this.borrarInscripcion(inscripcionDelAlumno.id).subscribe();
+        });
       });
   }
   constructor(private http: HttpClient) {}

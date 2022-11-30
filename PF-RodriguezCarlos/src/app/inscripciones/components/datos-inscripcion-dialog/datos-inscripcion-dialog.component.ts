@@ -4,7 +4,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { I_Alumno } from 'src/app/alumnos/models/alumno';
-import { AlumnosService } from 'src/app/alumnos/services/alumnos.service';
+import { I_AlumnoState } from 'src/app/alumnos/models/alumno.state';
+import { selectAlumnos } from 'src/app/alumnos/state/alumnos.selectors';
 import { I_Curso } from 'src/app/cursos/models/curso';
 import { I_CursoState } from 'src/app/cursos/models/curso.state';
 import { selectCursos } from 'src/app/cursos/state/cursos.selectors';
@@ -24,7 +25,7 @@ export class DatosInscripcionDialogComponent implements OnInit {
   alumnosSubscription: Subscription;
   constructor(
     private storeCursos: Store<I_CursoState>,
-    private alumnosService: AlumnosService,
+    private storeAlumnos: Store<I_AlumnoState>,
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<DatosInscripcionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: I_InscripcionConNombre
@@ -38,8 +39,8 @@ export class DatosInscripcionDialogComponent implements OnInit {
           ))
       );
 
-    this.alumnosSubscription = this.alumnosService
-      .obtenerAlumnos()
+    this.alumnosSubscription = this.storeAlumnos
+      .select(selectAlumnos)
       .subscribe((alumnos: I_Alumno[]) => (this.alumnosInsc = alumnos));
   }
 

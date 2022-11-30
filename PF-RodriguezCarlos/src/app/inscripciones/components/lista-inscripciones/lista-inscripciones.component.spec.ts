@@ -5,6 +5,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from 'src/app/material/material.module';
 import { provideMockStore } from '@ngrx/store/testing';
+import { StoreModule } from '@ngrx/store';
+import { alumnosReducer } from 'src/app/alumnos/state/alumnos.reducer';
+import { reducer } from 'src/app/core/state/sesion.reducer';
+import { inscripcionesReducer } from '../../state/inscripciones.reducer';
+import { cursosReducer } from 'src/app/cursos/state/cursos.reducer';
 
 describe('ListaInscripcionesComponent', () => {
   let component: ListaInscripcionesComponent;
@@ -17,6 +22,13 @@ describe('ListaInscripcionesComponent', () => {
         ReactiveFormsModule,
         MaterialModule,
         BrowserAnimationsModule,
+
+        StoreModule.forRoot({
+          inscripciones: inscripcionesReducer,
+          alumnos: alumnosReducer,
+          cursos: cursosReducer,
+          sesion: reducer,
+        }),
       ],
       declarations: [ListaInscripcionesComponent],
       providers: [provideMockStore({})],

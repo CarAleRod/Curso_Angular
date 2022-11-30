@@ -4,8 +4,6 @@ import * as SesionActions from './sesion.actions';
 
 export const sesionFeatureKey = 'sesion';
 
-export interface State {}
-
 export const estadoInicial: I_Sesion = {
   sesionActiva: false,
 };

@@ -1,11 +1,10 @@
 import { Action, createReducer, on } from '@ngrx/store';
+import { I_InscripcionState } from '../models/inscripcion.state';
 import * as InscripcionesActions from './inscripciones.actions';
 
 export const inscripcionesFeatureKey = 'inscripciones';
 
-export interface State {}
-
-export const estadoInicial: State = {
+export const estadoInicial: I_InscripcionState = {
   cargando: false,
   inscripciones: [],
 };
@@ -30,6 +29,9 @@ export const inscripcionesReducer = createReducer(
     return state;
   }),
   on(InscripcionesActions.borrarInscripcionPorCurso, (state, { id }) => {
+    return state;
+  }),
+  on(InscripcionesActions.borrarInscripcionPorAlumno, (state, { id }) => {
     return state;
   })
 );

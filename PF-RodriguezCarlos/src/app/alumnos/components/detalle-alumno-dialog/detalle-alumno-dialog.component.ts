@@ -1,11 +1,19 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+import { I_CursoState } from 'src/app/cursos/models/curso.state';
 import { I_CursoInscripcion } from 'src/app/cursos/models/cursoInscripcion';
-import { CursosService } from 'src/app/cursos/services/cursos.service';
+import { cargarCursos } from 'src/app/cursos/state/cursos.actions';
+import { selectCursos } from 'src/app/cursos/state/cursos.selectors';
 import { I_Inscripcion } from 'src/app/inscripciones/models/inscripcion';
-import { InscripcionesService } from 'src/app/inscripciones/services/inscripciones.service';
+import { I_InscripcionState } from 'src/app/inscripciones/models/inscripcion.state';
+import {
+  cargarInscripciones,
+  eliminarInscripcion,
+} from 'src/app/inscripciones/state/inscripciones.actions';
+import { selectInscripciones } from 'src/app/inscripciones/state/inscripciones.selectors';
 import { I_Alumno } from '../../models/alumno';
 
 @Component({
@@ -28,12 +36,14 @@ export class DetalleAlumnoDialogComponent implements OnInit, OnDestroy {
   dataSource: MatTableDataSource<I_CursoInscripcion> =
     new MatTableDataSource<I_CursoInscripcion>();
   constructor(
-    private inscripcionesService: InscripcionesService,
-    private cursosService: CursosService,
+    private storeInscripciones: Store<I_InscripcionState>,
+    private storeCursos: Store<I_CursoState>,
     public dialogRef: MatDialogRef<DetalleAlumnoDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: I_Alumno
   ) {
     this.alumno = data;
+    this.storeCursos.dispatch(cargarCursos());
+    this.storeInscripciones.dispatch(cargarInscripciones());
   }
 
   ngOnDestroy(): void {
@@ -45,43 +55,41 @@ export class DetalleAlumnoDialogComponent implements OnInit, OnDestroy {
     this.actualizarLista();
   }
   actualizarLista() {
-    this.subscripcion = this.inscripcionesService
-      .obtenerInscripciones()
+    this.subscripcion = this.storeInscripciones
+      .select(selectInscripciones)
       .subscribe({
         next: (inscripciones: I_Inscripcion[]) => {
-          let data: I_CursoInscripcion[] = [];
           let inscripcionesDelAlumno = inscripciones.filter(
             (inscripcion) => inscripcion.alumnoId == this.alumno.id
           );
+          let data: I_CursoInscripcion[] = [];
           if (inscripcionesDelAlumno.length > 0) {
-            inscripcionesDelAlumno.forEach((inscripcion) => {
-              this.cursosService.obtenerCurso(inscripcion.cursoId).subscribe({
-                next: (curso) => {
+            this.storeCursos.select(selectCursos).subscribe({
+              next: (cursos) => {
+                data = [];
+                inscripcionesDelAlumno.forEach((inscripcion) => {
+                  let cursoIx = cursos.findIndex(
+                    (curso) => curso.id == inscripcion.cursoId
+                  );
+                  let curso = cursos[cursoIx];
                   if (curso) {
                     data.push({ ...curso, inscripcionId: inscripcion.id });
                   }
-                },
-                complete: () => {
-                  this.dataSource.data = data;
-                },
-              });
+                });
+                this.dataSource.data = data;
+              },
             });
           } else {
             this.dataSource.data = data;
           }
         },
-        error: (error) => {
-          alert('hubo un error al obtener las inscripciones: ' + error.message);
-        },
       });
   }
 
   borrar(inscripcionId: number) {
-    this.inscripcionesService
-      .borrarInscripcion(inscripcionId)
-      .subscribe((inscripciones) => {
-        this.actualizarLista();
-      });
+    this.storeInscripciones.dispatch(
+      eliminarInscripcion({ id: inscripcionId })
+    );
   }
 
   filtrar(event: Event) {

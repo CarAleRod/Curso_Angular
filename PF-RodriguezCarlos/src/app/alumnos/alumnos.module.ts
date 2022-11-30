@@ -11,8 +11,20 @@ import { AlumnosRoutingModule } from './alumnos-routing.module';
 import { AlumnosService } from './services/alumnos.service';
 import { InscripcionesService } from '../inscripciones/services/inscripciones.service';
 import { CursosService } from '../cursos/services/cursos.service';
-import { reducer, sesionFeatureKey } from '../core/state/sesion.reducer';
 import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { AlumnosEffects } from './state/alumnos.effects';
+import { alumnosFeatureKey, alumnosReducer } from './state/alumnos.reducer';
+import { CursosEffects } from '../cursos/state/cursos.effects';
+import {
+  cursosFeatureKey,
+  cursosReducer,
+} from '../cursos/state/cursos.reducer';
+import { InscripcionesEffects } from '../inscripciones/state/inscripciones.effects';
+import {
+  inscripcionesFeatureKey,
+  inscripcionesReducer,
+} from '../inscripciones/state/inscripciones.reducer';
 
 @NgModule({
   declarations: [
@@ -26,6 +38,12 @@ import { StoreModule } from '@ngrx/store';
     SharedModule,
     MaterialModule,
     ReactiveFormsModule,
+    StoreModule.forFeature(alumnosFeatureKey, alumnosReducer),
+    EffectsModule.forFeature([AlumnosEffects]),
+    StoreModule.forFeature(cursosFeatureKey, cursosReducer),
+    EffectsModule.forFeature([CursosEffects]),
+    StoreModule.forFeature(inscripcionesFeatureKey, inscripcionesReducer),
+    EffectsModule.forFeature([InscripcionesEffects]),
   ],
   providers: [AlumnosService, InscripcionesService, CursosService],
   exports: [],
