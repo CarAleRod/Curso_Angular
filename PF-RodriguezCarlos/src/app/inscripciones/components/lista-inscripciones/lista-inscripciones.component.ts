@@ -8,7 +8,7 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { I_Inscripcion } from '../../models/inscripcion';
 import { I_InscripcionConNombre } from '../../models/InscripcionConNombre';
@@ -34,6 +34,7 @@ import {
 import { I_AlumnoState } from 'src/app/alumnos/models/alumno.state';
 import { selectAlumnos } from 'src/app/alumnos/state/alumnos.selectors';
 import { cargarAlumnos } from 'src/app/alumnos/state/alumnos.actions';
+import { selectSesion } from 'src/app/core/state/sesion.selectors';
 
 @Component({
   selector: 'app-lista-inscripciones',
@@ -47,6 +48,7 @@ export class ListaInscripcionesComponent
   subscripcionAlumnos!: Subscription;
   cursos!: I_Curso[];
   alumnos!: I_Alumno[];
+  sesion$!: Observable<I_Sesion>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -86,6 +88,7 @@ export class ListaInscripcionesComponent
   }
 
   ngOnInit(): void {
+    this.sesion$ = this.storeSesion.select(selectSesion);
     this.storeSesion.dispatch(
       cargarMenuActivo({ menuActivo: 'Inscripciones' })
     );

@@ -30,11 +30,17 @@
       </mat-form-field>
     </form>
   </div>
-  <div class="col-2 mt-2" style="align-content: flex-start">
-    <div class="d-flex justify-content-center w-100 mb-3">
-      <button mat-raised-button (click)="openDialog()" color="primary">
-        Agregar inscripcion
-      </button>
+  <div
+    *ngIf="sesion$ | async as sesion"
+    class="col-2 mt-2"
+    style="align-content: flex-start"
+  >
+    <div *ngIf="sesion.usuarioActivo?.esAdmin">
+      <div class="d-flex justify-content-center w-100 mb-3">
+        <button mat-raised-button (click)="openDialog()" color="primary">
+          Agregar inscripcion
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -84,20 +90,24 @@
       <ng-container matColumnDef="acciones">
         <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
         <mat-cell *matCellDef="let inscripcion">
-          <mat-icon
-            class="cursor-pointer"
-            color="primary"
-            matTooltip="Editar"
-            (click)="editar(inscripcion.id)"
-            >edit</mat-icon
-          >
-          <mat-icon
-            class="cursor-pointer"
-            color="primary"
-            matTooltip="Borrar"
-            (click)="borrar(inscripcion.id)"
-            >delete</mat-icon
-          >
+          <div *ngIf="sesion$ | async as sesion">
+            <mat-icon
+              *ngIf="sesion.usuarioActivo?.esAdmin"
+              class="cursor-pointer"
+              color="primary"
+              matTooltip="Editar"
+              (click)="editar(inscripcion.id)"
+              >edit</mat-icon
+            >
+            <mat-icon
+              *ngIf="sesion.usuarioActivo?.esAdmin"
+              class="cursor-pointer"
+              color="primary"
+              matTooltip="Borrar"
+              (click)="borrar(inscripcion.id)"
+              >delete</mat-icon
+            >
+          </div>
         </mat-cell>
       </ng-container>
 
